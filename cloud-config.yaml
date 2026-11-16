@@ -1,0 +1,25 @@
+#cloud-config
+users:
+  - name: user1
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG2dZxSo1XnapLh5WvfVph/5djY9bau4kepsfcpSloLV cherepashka@DESKTOP-93CAA98
+  - name: user2
+    sudo: 'ALL=(ALL) NOPASSWD:ALL'
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHDS23aKE4tgZPTfB2yfBHs0h5ZoegMhG+ssv/wnhk+B cherepashka@DESKTOP-93CAA98
+
+write_files:
+  - path: "/usr/local/etc/startup.sh"
+    permissions: "755"
+    content: |
+      #!/bin/bash
+      apt-get update
+      apt-get install -y nginx
+      systemctl enable --now nginx
+      sed -i -- "s/nginx/Yandex Cloud - ${HOSTNAME}/" /var/www/html/index.nginx-debian.html
+
+runcmd:
+  - ["/usr/local/etc/startup.sh"]
